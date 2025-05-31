@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Fácil - Assistente de Saúde</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            max-width: 700px;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+        #chat-header {
+            background-color: #2563eb;
+            color: white;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 600;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #chat-header i {
+            margin-right: 10px;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+        #chat-messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background-color: #f9fafb;
+        }
+        .message-wrapper { /* Wrapper for AI message and its read-aloud button */
+            display: flex;
+            align-items: flex-start; /* Align items to the start of the cross axis */
+            gap: 8px; /* Space between message bubble and button */
+            max-width: 90%; /* Ensure wrapper doesn't overflow too much */
+        }
+        .message-wrapper.ai-wrapper {
+             align-self: flex-start;
+        }
+
+        .message {
+            padding: 0.85rem 1.1rem;
+            border-radius: 10px;
+            max-width: 100%; /* Message bubble takes full width of its content within wrapper */
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #3b82f6;
+            color: white;
+            align-self: flex-end; /* User messages still align to the right */
+            border-bottom-right-radius: 0px;
+            max-width: 85%; /* Keep user message max-width */
+        }
+        .ai-message {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            /* align-self: flex-start; No longer needed here, handled by wrapper */
+            border-bottom-left-radius: 0px;
+        }
+        .ai-message strong { /* This CSS rule correctly styles the <strong> tag */
+            font-weight: 600;
+            color: #111827;
+        }
+        .ai-message.typing {
+            color: #6b7280;
+            font-style: italic;
+            width: fit-content; /* So typing indicator doesn't take full width */
+        }
+        .message img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        .message .image-caption {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .read-aloud-button-standalone {
+            background-color: #e5e7eb; /* Match AI bubble or be distinct */
+            border: none;
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 8px; /* Make it a bit more clickable */
+            border-radius: 50%; /* Circular button */
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px; /* Align with top of message bubble */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0; /* Prevent button from shrinking */
+        }
+        .read-aloud-button-standalone:hover {
+            background-color: #d1d5db; /* Slightly darker on hover */
+            color: #2563eb;
+        }
+
+        #input-area {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            gap: 0.5rem;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease-in-out;
+        }
+        #user-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        .icon-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+        .icon-button:hover {
+            background-color: #2563eb;
+        }
+        .icon-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        #image-preview-modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center;
+        }
+        #image-preview-modal img { max-width: 80%; max-height: 80%; border-radius: 8px; }
+        #image-preview-modal .close-modal {
+            position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px;
+            font-weight: bold; cursor: pointer;
+        }
+
+        #chat-messages::-webkit-scrollbar { width: 8px; }
+        #chat-messages::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        #chat-messages::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            <i class="fas fa-book-medical"></i> Diabetes Fácil
+        </div>
+        <div id="chat-messages">
+            </div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off">
+            <button id="send-audio-button" class="icon-button" title="Enviar Áudio (Simulado)">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <input type="file" id="send-image-input" accept="image/*" style="display: none;">
+            <button id="send-image-button" class="icon-button" title="Enviar Foto do Prato">
+                <i class="fas fa-camera"></i>
+            </button>
+            <button id="send-button" class="icon-button" title="Enviar Mensagem">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="image-preview-modal">
+        <span class="close-modal">&times;</span>
+        <img id="modal-image-content">
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const sendAudioButton = document.getElementById('send-audio-button');
+        const sendImageButton = document.getElementById('send-image-button');
+        const sendImageInput = document.getElementById('send-image-input');
+        const imagePreviewModal = document.getElementById('image-preview-modal');
+        const modalImageContent = document.getElementById('modal-image-content');
+        const closeModalButton = document.querySelector('#image-preview-modal .close-modal');
+
+        let chatHistory = []; // Will be initialized in initialChatSetup
+        let currentImageToSend = null;
+        let voices = [];
+        let inactivityTimer;
+        const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
+        const systemPromptText = `Você é o "Diabetes Fácil", um assistente virtual especializado em apoiar pacientes com diabetes (tipo 1 e tipo 2) e promover um estilo de vida saudável. Seja amigável e empático. 
+        SOBRE EMOJIS: Use emojis COM MODERAÇÃO. Eles são bem-vindos para adicionar um toque amigável e visualmente agradável quando apropriado (por exemplo, 🥗 para alimentação, 🏃‍♀️ para exercícios), mas EVITE O EXCESSO para não poluir a conversa. Um ou dois emojis por mensagem, se relevantes, são suficientes.
+        Suas orientações são baseadas em evidências e diretrizes da Sociedade Brasileira de Diabetes (SBD), ADA, e outras referências médicas atuais. Mantenha respostas curtas, com parágrafos pequenos. 
+        FORMATAR TEXTO IMPORTANTE: Para enfatizar texto (deixá-lo em negrito), você DEVE USAR EXCLUSIVAMENTE AS TAGS HTML <strong> E </strong>. Exemplo: <strong>este texto é importante</strong>. 
+        É TERMINANTEMENTE PROIBIDO USAR ASTERISCOS (*) PARA NEGRITO OU QUALQUER OUTRA FORMA DE MARKDOWN. NÃO USE ASTERISCOS EM NENHUMA HIPÓTESE PARA FORMATAÇÃO. REPITO: NUNCA, JAMAIS USE ASTERISCOS PARA FORMATAÇÃO. APENAS <strong>TAGS HTML</strong> SÃO PERMITIDAS PARA NEGRITO.
+        Para apresentar listas de itens ou dicas, prefira frases curtas em parágrafos separados. Se precisar listar vários pontos curtos, você pode usar hífens (-) no início de uma nova linha para cada item. Por exemplo:
+        - Primeira dica importante.
+        - Segunda dica útil.
+        Você também pode usar emojis como ✅, ➡️, 💡, 📌 ou 📋 MODERADAMENTE no início de itens de uma lista ou para destacar uma informação pontual, se visualmente apropriado e sem exageros.
+        Use sempre "índice glicêmico" ao invés da sigla "IG".
+
+        Sua atuação abrange:
+        1.  **Controle Glicêmico**: Ajude a interpretar níveis de glicemia (jejum, pós-prandial, etc.). Sugira ações práticas (hidratação 💧, refeição com baixo índice glicêmico, descanso, correção hipo/hiperglicemia). Alerte sobre riscos e quando procurar um médico 👨‍⚕️.
+        2.  **Alimentação e Nutrição 🥗**: Sugira alimentos de baixo índice glicêmico e nutritivos. Se solicitado, ajude a pensar em ideias para cardápios semanais (ex: perda de peso, controle glicêmico, vegetariano, low carb). Forneça ideias de receitas práticas, com porções e contagem de carboidratos (se souber). Oriente sobre pratos equilibrados e substituições saudáveis. **Se o usuário enviar uma foto de um prato, analise-a gentilmente, aponte pontos positivos e sugira 1-2 modificações simples para torná-lo mais adequado para pacientes com diabetes, explicando o porquê.**
+        3.  **Atividade Física 🏃‍♀️**: Sugira exercícios (aeróbico, resistência, etc.). Alerte sobre cuidados pré/pós treino (checar glicemia, hidratar, ter algo doce para hipo). Adapte sugestões à idade, peso, comorbidades, uso de insulina.
+        4.  **Medicamentos e Insulina 💊**: Explique o funcionamento de medicamentos comuns (metformina, glibenclamida, insulinas). Oriente sobre efeitos colaterais, interações, horários e dicas para evitar hipo. Explique termos como insulina basal, bolus, correção. **Sempre reforce que a prescrição final é médica.**
+        5.  **Complicações e Prevenção**: Alerte sobre sintomas de hipo/hiperglicemia e como agir. Oriente sobre cuidados com pés, visão, rins, coração. Incentive exames de rotina (glicada, etc.).
+        6.  **Saúde Emocional e Estilo de Vida ❤️**: Ajude a lidar com estresse, ansiedade, burnout do diabetes. Motive a adesão ao tratamento com mensagens positivas. Sugira rotinas de sono, relaxamento.
+        7.  **Educação e Dúvidas**: Explique termos (resistência à insulina, índice glicêmico, etc.). Responda dúvidas comuns (“Posso comer fruta à noite?”).
+        
+        Se o usuário enviar uma mensagem de áudio (simulado), apenas acuse o recebimento e diga que no momento você processa melhor mensagens de texto e imagens.
+        Se a pergunta for muito complexa ou fora do escopo, sugira consultar um médico.`;
+
+        function populateVoiceList() {
+            if (typeof speechSynthesis === 'undefined') return;
+            voices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith('pt')); 
+            const highQualityPortugueseVoices = voices.filter(voice => 
+                voice.lang === 'pt-BR' && 
+                (voice.name.toLowerCase().includes('neural') || 
+                 voice.name.toLowerCase().includes('google') || 
+                 voice.name.toLowerCase().includes('microsoft') || 
+                 voice.name.toLowerCase().includes('female') || 
+                 voice.localService === false) 
+            );
+            if (highQualityPortugueseVoices.length > 0) {
+                voices = highQualityPortugueseVoices;
+            } else if (voices.length === 0) { 
+                 voices = speechSynthesis.getVoices(); 
+            }
+        }
+        populateVoiceList();
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+        
+        const emojiRegex = /([\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B50}\u{23E9}-\u{23FA}\u{2300}-\u{23FF}\u{25A0}-\u{25FF}\u{203C}\u{2049}\u{2122}\u{2139}\u{2194}-\u{2199}\u{21A9}-\u{21AA}\u{2934}-\u{2935}\u{2B05}-\u{2B07}\u{3030}\u{303D}\u{3297}\u{3299}]|\u{D83C}[\u{DC04}\u{DCCF}\u{DD70}-\u{DD71}\u{DD7E}-\u{DD7F}\u{DD8E}\u{DD91}-\u{DD9A}\u{DE01}-\u{DE02}\u{DE1A}\u{DE2F}\u{DE32}-\u{DE3A}\u{DE50}-\u{DE51}\u{DF00}-\u{DF21}\u{DF24}-\u{DF93}\u{DF96}-\u{DF97}\u{DF99}-\u{DF9B}\u{DF9E}-\u{DFF0}\u{DFF3}-\u{DFF5}\u{DFF7}-\u{DFFF}]|\u{D83D}[\u{DC00}-\u{DCFD}\u{DCFF}-\u{DD3D}\u{DD49}-\u{DD4E}\u{DD50}-\u{DD67}\u{DD6F}-\u{DD70}\u{DD73}-\u{DD7A}\u{DD87}\u{DD8A}-\u{DD8D}\u{DD90}\u{DD95}-\u{DD96}\u{DDA4}-\u{DDA5}\u{DDA8}\u{DDB1}-\u{DDB2}\u{DDBC}\u{DDC2}-\u{DDC4}\u{DDD1}-\u{DDD3}\u{DDDC}-\u{DDDE}\u{DDE1}\u{DDE3}\u{DDE8}\u{DDEF}\u{DDF3}\u{DDFA}-\u{DE4F}\u{DE80}-\u{DEFF}]|\u{D83E}[\u{DC00}-\u{DC0B}\u{DC0D}-\u{DC27}\u{DC29}-\u{DC2E}\u{DC30}-\u{DC5B}\u{DC5D}-\u{DC77}\u{DC79}-\u{DCBF}\u{DD00}-\u{DDFF}\u{DE00}-\u{DEFF}])(\u{FE0F}|\u{200D}[\u{2640}\u{2642}]|\u{D83C}[\u{DFFB}-\u{DFFF}])*/gu;
+
+
+        function speakText(textToSpeak) {
+            if ('speechSynthesis' in window) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = textToSpeak;
+                let cleanText = tempDiv.textContent || tempDiv.innerText || "";
+                
+                cleanText = cleanText.replace(emojiRegex, '').trim();
+                cleanText = cleanText.replace(/\s\s+/g, ' ');
+
+
+                if (speechSynthesis.speaking) speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                let selectedVoice = voices.find(voice => voice.lang === 'pt-BR' && (voice.name.toLowerCase().includes('neural') || voice.name.toLowerCase().includes('google') || voice.name.toLowerCase().includes('microsoft') || voice.name.toLowerCase().includes('soraia') || voice.name.toLowerCase().includes('camila') || voice.name.toLowerCase().includes('helena') || voice.name.toLowerCase().includes('luciana'))); 
+                if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang === 'pt-BR' && voice.localService === false); 
+                if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang === 'pt-BR'); 
+                if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang.startsWith('pt')); 
+                
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                } else if (voices.length > 0 && voices[0].lang.startsWith('pt')) { 
+                    utterance.voice = voices[0];
+                }
+                utterance.lang = 'pt-BR'; 
+                utterance.rate = 0.95; 
+                utterance.pitch = 1; 
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function formatAIResponse(text) {
+            let formattedText = text;
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedText = formattedText.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            return formattedText;
+        }
+
+
+        function addMessage(content, sender, type = 'text') {
+            let processedContent = content;
+            if (sender === 'ai' && type === 'text') {
+                processedContent = formatAIResponse(content);
+            }
+
+            if (sender === 'ai') {
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('message-wrapper', 'ai-wrapper');
+
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'ai-message');
+                messageElement.innerHTML = processedContent;
+
+                const readButton = document.createElement('button');
+                readButton.classList.add('read-aloud-button-standalone');
+                readButton.title = "Ler mensagem em voz alta";
+                readButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+                readButton.onclick = (e) => {
+                    e.stopPropagation();
+                    speakText(processedContent); 
+                };
+                
+                wrapper.appendChild(messageElement);
+                wrapper.appendChild(readButton);
+                chatMessages.appendChild(wrapper);
+
+            } else if (type === 'text') { 
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'user-message');
+                messageElement.textContent = processedContent; 
+                chatMessages.appendChild(messageElement);
+            } else if (type === 'image' && sender === 'user') { 
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'user-message'); 
+                const img = document.createElement('img');
+                img.src = processedContent; 
+                img.alt = "Imagem enviada pelo usuário";
+                img.onclick = () => openImageModal(processedContent);
+                messageElement.appendChild(img);
+                const caption = document.createElement('div');
+                caption.classList.add('image-caption');
+                caption.textContent = "Sua imagem (clique para ampliar)";
+                messageElement.appendChild(caption);
+                chatMessages.appendChild(messageElement);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            resetInactivityTimer(); 
+        }
+
+        function openImageModal(src) {
+            modalImageContent.src = src;
+            imagePreviewModal.style.display = 'flex';
+        }
+        closeModalButton.onclick = () => imagePreviewModal.style.display = 'none';
+        imagePreviewModal.onclick = (event) => {
+            if (event.target === imagePreviewModal) imagePreviewModal.style.display = 'none';
+        };
+
+        function addTypingIndicator() {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('message-wrapper', 'ai-wrapper'); 
+            wrapper.id = 'typing-indicator-wrapper';
+            
+            const typingIndicator = document.createElement('div');
+            typingIndicator.classList.add('message', 'ai-message', 'typing');
+            typingIndicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Diabetes Fácil digitando...'; 
+            
+            wrapper.appendChild(typingIndicator);
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicatorWrapper = document.getElementById('typing-indicator-wrapper');
+            if (typingIndicatorWrapper) typingIndicatorWrapper.remove();
+        }
+
+        // const apiKey = ""; // API Key REMOVED from client-side code
+
+        async function getAiResponse(userMessageParts) {
+            addTypingIndicator();
+            [sendButton, sendAudioButton, sendImageButton, userInput].forEach(el => el.disabled = true);
+            
+            chatHistory.push({ role: "user", parts: userMessageParts });
+            
+            // apiUrl now points to the Netlify Function
+            const apiUrl = `/.netlify/functions/gemini-proxy`; 
+            
+            const payload = { 
+                contents: chatHistory, 
+                generationConfig: {} 
+            };
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API Error (from Netlify function):', errorData);
+                    throw new Error(`Falha na comunicação com o assistente: ${errorData.error || response.statusText}`);
+                }
+                const result = await response.json();
+                removeTypingIndicator();
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts[0].text) {
+                    const aiResponseText = result.candidates[0].content.parts[0].text;
+                    addMessage(aiResponseText, 'ai'); 
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] }); 
+                } else if (result.error) { // Handle errors returned structured by our Netlify function
+                    addMessage(`Erro do assistente: ${result.error}`, 'ai');
+                    console.error('Structured error from Netlify function:', result.error);
+                }
+                 else {
+                    addMessage('Desculpe, não consegui processar sua solicitação. Tente mais tarde.', 'ai');
+                    console.error('API response structure inesperada:', result);
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                console.error('Erro ao enviar mensagem para IA:', error);
+                addMessage(`Erro: ${error.message}. Verifique sua conexão ou tente mais tarde.`, 'ai');
+            } finally {
+                [sendButton, sendAudioButton, sendImageButton, userInput].forEach(el => el.disabled = false);
+                userInput.focus();
+                currentImageToSend = null;
+                resetInactivityTimer();
+            }
+        }
+
+        function handleSendMessage() {
+            const messageText = userInput.value.trim();
+            let userMessageParts = [];
+            if (currentImageToSend) {
+                userMessageParts.push({ inlineData: { mimeType: currentImageToSend.mimeType, data: currentImageToSend.data } });
+                if (messageText) {
+                    userMessageParts.unshift({ text: messageText + " (Analisar imagem em anexo)" });
+                } else {
+                    userMessageParts.unshift({ text: "Por favor, analise esta imagem de prato. O que posso melhorar? 🥗" }); 
+                }
+                addMessage(currentImageToSend.previewUrl, 'user', 'image'); 
+            } else if (messageText) {
+                userMessageParts.push({ text: messageText });
+                addMessage(messageText, 'user'); 
+            }
+
+            if (userMessageParts.length > 0) {
+                userInput.value = '';
+                getAiResponse(userMessageParts);
+            }
+            currentImageToSend = null;
+            sendImageInput.value = null;
+            resetInactivityTimer();
+        }
+
+        sendButton.addEventListener('click', handleSendMessage);
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') handleSendMessage();
+            resetInactivityTimer(); 
+        });
+        userInput.addEventListener('input', resetInactivityTimer); 
+
+        sendAudioButton.addEventListener('click', () => {
+            const audioUserMsg = "Você: [Áudio Enviado - Simulado]";
+            const audioAiResponse = "🎤 Áudio recebido (simulado). No momento, processo melhor mensagens de texto e imagens. Por favor, digite sua dúvida ou envie uma foto do seu prato!"; 
+            addMessage(audioUserMsg, 'user');
+            chatHistory.push({ role: "user", parts: [{ text: "[Simulação de envio de áudio pelo usuário]" }] });
+            setTimeout(() => {
+                 addMessage(audioAiResponse, 'ai');
+                 chatHistory.push({ role: "model", parts: [{ text: audioAiResponse }] });
+            }, 500);
+            userInput.placeholder = "Digite sua mensagem ou envie uma foto...";
+            resetInactivityTimer();
+        });
+
+        sendImageButton.addEventListener('click', () => {
+            sendImageInput.click();
+            resetInactivityTimer();
+        });
+        sendImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImageToSend = {
+                        mimeType: file.type, data: e.target.result.split(',')[1], previewUrl: e.target.result
+                    };
+                    userInput.value = `Pronto para enviar imagem: ${file.name}. Adicione um comentário ou envie.`;
+                    userInput.focus();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                currentImageToSend = null; sendImageInput.value = null;
+            }
+            resetInactivityTimer();
+        });
+        
+        function resetConversation() {
+            console.log("Conversa reiniciada devido à inatividade.");
+            chatMessages.innerHTML = ''; 
+            if (speechSynthesis.speaking) speechSynthesis.cancel(); 
+            initialChatSetup(); 
+            addMessage("Sua conversa foi reiniciada devido a inatividade. 😊", "ai"); 
+        }
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(resetConversation, INACTIVITY_TIMEOUT_MS);
+        }
+
+        function initialChatSetup() {
+            chatHistory = [
+                { role: "user", parts: [{ text: systemPromptText }] } 
+            ];
+
+            const firstAiMessage = "Olá! Sou o <strong>Diabetes Fácil</strong> <i class='fas fa-book-medical' style='color:#2563eb;'></i>, seu assistente para saúde e diabetes.<br>Como está sua glicemia hoje? 🤔 Ou me envie uma foto do seu prato! 📸"; 
+            addMessage(firstAiMessage, 'ai'); 
+            chatHistory.push({ role: "model", parts: [{ text: firstAiMessage }] }); 
+            resetInactivityTimer();
+        }
+        
+        initialChatSetup();
+        ['click', 'keypress', 'mousemove', 'scroll', 'touchstart', 'focus', 'blur'].forEach(event => {
+            window.addEventListener(event, resetInactivityTimer, true); 
+        });
+
+    </script>
+</body>
+</html>
