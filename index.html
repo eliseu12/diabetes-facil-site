@@ -12,80 +12,71 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; 
+            overflow: hidden; /* Prevent scrolling on the body itself */
             -webkit-tap-highlight-color: transparent; 
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
+            background-color: #e0f2fe; /* Light blue background for the page */
         }
+
+        #app-page-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            width: 100%;
+            overflow: hidden; /* Children will handle their own scrolling */
+        }
+
+        /* Page header removed as per user request */
+
+        #chat-container-wrapper { /* Wrapper to center chat-container on desktop */
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            padding: 0; 
+        }
+        
         #chat-container {
             display: flex;
             flex-direction: column;
             width: 100%; 
-            max-width: 450px; 
-            height: 85vh;    
-            max-height: 700px; 
-            margin: auto;      
+            height: 100%; 
+            max-width: 700px; 
+            max-height: 90vh; 
             background-color: #ffffff;
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+            border-radius: 0px; 
+            box-shadow: none; 
             overflow: hidden; 
         }
 
-        @media (max-width: 599px) {
-            html, body {
-                overflow: hidden; /* Prevent body scrolling on mobile */
-            }
-            body { 
-                padding-top: 0;
-                padding-bottom: 0;
-                /* Removed align-items and justify-content for body on mobile,
-                   as #chat-container will be fixed and cover the screen. */
+        @media (min-width: 600px) { 
+            #chat-container-wrapper {
+                padding: 20px; 
             }
             #chat-container {
-                position: fixed; /* Use fixed positioning for mobile to fill viewport */
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                height: 100%; /* Full height of the fixed container (viewport) */
-                width: 100%;  /* Full width of the fixed container (viewport) */
-                max-height: none; /* Override max-height for fixed positioning */
-                max-width: none;  /* Override max-width for fixed positioning */
-                border-radius: 0;
-                box-shadow: none;
-                margin: 0; 
-            }
-        }
-        
-        @media (min-width: 768px) { 
-            #chat-container {
-                max-width: 700px; 
-                height: 80vh; 
-                max-height: 750px;
+                border-radius: 12px; 
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); 
+                height: calc(100% - 40px); 
+                max-height: 750px; 
             }
         }
 
         #chat-header {
-            background-color: #2563eb;
+            background-color: #2563eb; /* Tailwind blue-600 */
             color: white;
-            padding: 1rem 1.5rem;
+            padding: 0.75rem; /* Adjusted padding */
             text-align: center;
-            font-size: 1.2rem; 
-            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0; 
+            min-height: 60px; /* Ensure a minimum height for the header */
         }
         #chat-header i {
-            margin-right: 10px;
-            font-size: 1.5rem; 
+            font-size: 1.75rem; /* Larger icon */
             color: #ffffff;
         }
         #chat-messages {
@@ -239,29 +230,47 @@
         #chat-messages::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         #chat-messages::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
         #chat-messages::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+
+        #app-page-footer {
+            background-color: #f9fafb; 
+            color: #6b7280; 
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            border-top: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-header">
-            <i class="fas fa-book-medical"></i> Diabetes Fácil
-        </div>
-        <div id="chat-messages">
+    <div id="app-page-wrapper">
+        <div id="chat-container-wrapper">
+            <div id="chat-container">
+                <div id="chat-header">
+                    <i class="fas fa-leaf"></i> </div>
+                <div id="chat-messages">
+                    </div>
+                <div id="input-area">
+                    <input type="text" id="user-input" placeholder="Digite ou clique no microfone para falar..." autocomplete="off">
+                    <button id="send-audio-button" class="icon-button" title="Gravar Áudio">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <input type="file" id="send-image-input" accept="image/*" style="display: none;">
+                    <button id="send-image-button" class="icon-button" title="Enviar Foto do Prato">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                    <button id="send-button" class="icon-button" title="Enviar Mensagem">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
-        <div id="input-area">
-            <input type="text" id="user-input" placeholder="Digite ou clique no microfone para falar..." autocomplete="off">
-            <button id="send-audio-button" class="icon-button" title="Gravar Áudio">
-                <i class="fas fa-microphone"></i>
-            </button>
-            <input type="file" id="send-image-input" accept="image/*" style="display: none;">
-            <button id="send-image-button" class="icon-button" title="Enviar Foto do Prato">
-                <i class="fas fa-camera"></i>
-            </button>
-            <button id="send-button" class="icon-button" title="Enviar Mensagem">
-                <i class="fas fa-paper-plane"></i>
-            </button>
         </div>
+
+        <footer id="app-page-footer" class="hidden sm:block"> 
+            &copy; 2024 Diabetes Fácil. Informação e apoio ao seu alcance.
+        </footer>
     </div>
+
 
     <div id="image-preview-modal">
         <span class="close-modal">&times;</span>
@@ -711,4 +720,4 @@
 
     </script>
 </body>
-</ht
+</html>
