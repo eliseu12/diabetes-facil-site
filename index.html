@@ -12,91 +12,105 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* Prevent horizontal scroll on the page */
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+            overflow-x: hidden; /* Prevent horizontal scroll on the page body */
+            -webkit-tap-highlight-color: transparent; 
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Visible on larger screens */
+            background-color: #f0f4f8; 
+            display: flex; /* Added to help center chat-container on larger screens */
+            align-items: center; /* Added to help center chat-container on larger screens */
+            justify-content: center; /* Added to help center chat-container on larger screens */
+            min-height: 100vh; /* Ensure body takes full height for centering */
         }
         #chat-container {
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Fallback for older browsers */
-            height: 100dvh; /* Dynamic viewport height for better mobile fit */
-            width: 100%;   /* Full width */
-            max-width: 700px; /* Max width on larger screens */
-            margin: 0 auto;   /* Center on larger screens */
+            width: 100%; 
+            max-width: 450px; /* Default max-width, good for embedding or smaller views */
+            height: 85vh;    /* Default height, good portion of screen */
+            max-height: 700px; /* Absolute max height */
+            margin: auto;      /* Center it by default */
             background-color: #ffffff;
-            box-shadow: none; /* No shadow on mobile by default */
-            border-radius: 0; /* No radius on mobile by default */
-            overflow: hidden; /* Crucial: children will scroll, not the container */
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+            overflow: hidden; 
         }
 
-        /* Card-like appearance for screens wider than a typical mobile width */
-        @media (min-width: 600px) { /* Example breakpoint, adjust as needed */
-            html, body {
-                 /* Allow body scroll on desktop if chat card is very tall or for general page content */
-                overflow: auto;
-            }
-            body {
-                 padding-top: 20px; /* Add some spacing around the card */
-                 padding-bottom: 20px;
+        /* Adjustments for very small screens (like typical mobile portrait) */
+        @media (max-width: 599px) {
+            body { /* Remove body padding for full screen on mobile */
+                padding-top: 0;
+                padding-bottom: 0;
+                align-items: flex-start; /* Align chat to top on mobile */
+                justify-content: flex-start;
             }
             #chat-container {
-                height: calc(100vh - 40px); /* Or a more constrained height like 90vh */
-                max-height: 90vh; /* Example: Limit height to 90% of viewport height */
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                height: 100vh; /* Fallback */
+                height: 100dvh; /* Full dynamic viewport height */
+                max-height: 100dvh;
+                max-width: 100%; /* Full width on mobile */
+                border-radius: 0;
+                box-shadow: none;
+                margin: 0; /* No margin on mobile */
             }
         }
+        
+        /* Adjustments for larger screens (tablets/desktops) */
+        @media (min-width: 768px) { /* Tablet and up */
+            #chat-container {
+                max-width: 700px; 
+                height: 80vh; 
+                max-height: 750px;
+            }
+        }
+
 
         #chat-header {
             background-color: #2563eb;
             color: white;
             padding: 1rem 1.5rem;
             text-align: center;
-            font-size: 1.2rem; /* Slightly smaller font for header on mobile */
+            font-size: 1.2rem; 
             font-weight: 600;
-            /* border-top-left-radius & border-top-right-radius handled by #chat-container on desktop */
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0; /* Prevent header from shrinking */
+            flex-shrink: 0; 
         }
         #chat-header i {
             margin-right: 10px;
-            font-size: 1.5rem; /* Adjust icon size */
+            font-size: 1.5rem; 
             color: #ffffff;
         }
         #chat-messages {
             flex-grow: 1;
-            padding: 1rem; /* Slightly reduced padding for mobile */
+            padding: 1rem; 
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem; /* Slightly reduced gap */
+            gap: 0.75rem; 
             background-color: #f9fafb;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            -webkit-overflow-scrolling: touch; 
         }
         .message-wrapper {
             display: flex;
             align-items: flex-start; 
             gap: 8px; 
-            max-width: 95%; /* Allow a bit more width for messages on mobile */
+            max-width: 95%; 
         }
         .message-wrapper.ai-wrapper {
              align-self: flex-start;
         }
 
         .message {
-            padding: 0.75rem 1rem; /* Adjust padding */
+            padding: 0.75rem 1rem; 
             border-radius: 10px;
             max-width: 100%; 
-            line-height: 1.5; /* Adjust line height */
+            line-height: 1.5; 
             white-space: pre-wrap;
-            word-wrap: break-word; /* Ensure long words break */
-            overflow-wrap: break-word; /* More robust word breaking */
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
         }
         .user-message {
             background-color: #3b82f6;
@@ -127,7 +141,7 @@
             cursor: pointer;
         }
         .message .image-caption {
-            font-size: 0.75rem; /* Smaller caption */
+            font-size: 0.75rem; 
             color: #6b7280;
             margin-top: 4px;
         }
@@ -136,11 +150,11 @@
             border: none;
             color: #3b82f6;
             cursor: pointer;
-            font-size: 0.9rem; /* Adjust icon size */
+            font-size: 0.9rem; 
             padding: 7px; 
             border-radius: 50%; 
-            width: 32px; /* Smaller button */
-            height: 32px; /* Smaller button */
+            width: 32px; 
+            height: 32px; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -163,18 +177,18 @@
         #input-area {
             display: flex;
             align-items: center;
-            padding: 0.75rem; /* Adjust padding */
+            padding: 0.75rem; 
             border-top: 1px solid #e5e7eb;
             background-color: #ffffff;
             gap: 0.5rem;
-            flex-shrink: 0; /* Prevent input area from shrinking */
+            flex-shrink: 0; 
         }
         #user-input {
             flex-grow: 1;
-            padding: 0.65rem 0.9rem; /* Adjust padding */
+            padding: 0.65rem 0.9rem; 
             border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 0.95rem; /* Adjust font size */
+            font-size: 0.95rem; 
             transition: border-color 0.2s ease-in-out;
         }
         #user-input:focus {
@@ -185,17 +199,17 @@
         .icon-button {
             background-color: #3b82f6;
             color: white;
-            padding: 0.65rem; /* Adjust padding */
+            padding: 0.65rem; 
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem; /* Adjust icon size */
+            font-size: 0.95rem; 
             transition: background-color 0.2s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px; /* Adjust button size */
-            height: 40px; /* Adjust button size */
+            width: 40px; 
+            height: 40px; 
             flex-shrink: 0;
         }
         .icon-button:hover {
@@ -250,16 +264,17 @@
     </div>
 
     <script>
-        const chatMessages = document.getElementById('chat-messages');
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
-        const sendAudioButton = document.getElementById('send-audio-button');
-        const sendAudioButtonIcon = sendAudioButton.querySelector('i');
-        const sendImageButton = document.getElementById('send-image-button');
-        const sendImageInput = document.getElementById('send-image-input');
-        const imagePreviewModal = document.getElementById('image-preview-modal');
-        const modalImageContent = document.getElementById('modal-image-content');
-        const closeModalButton = document.querySelector('#image-preview-modal .close-modal');
+        // Renamed DOM element variables to avoid potential global scope clashes with IDs
+        const chatMessagesContainer = document.getElementById('chat-messages');
+        const userInputElement = document.getElementById('user-input');
+        const sendButtonElement = document.getElementById('send-button');
+        const sendAudioButtonElement = document.getElementById('send-audio-button');
+        const sendAudioButtonIconElement = sendAudioButtonElement.querySelector('i');
+        const sendImageButtonElement = document.getElementById('send-image-button');
+        const sendImageInputElement = document.getElementById('send-image-input');
+        const imagePreviewModalDialog = document.getElementById('image-preview-modal');
+        const modalImageElement = document.getElementById('modal-image-content');
+        const closeModalButtonElement = document.querySelector('#image-preview-modal .close-modal');
 
         let chatHistory = [];
         let currentImageToSend = null;
@@ -269,6 +284,7 @@
 
         let recognition;
         let isRecording = false;
+        let currentSpeechUtterance = null; 
 
         const systemPromptText = `Você é o "Diabetes Fácil", um assistente virtual especializado em apoiar pacientes com diabetes (tipo 1 e tipo 2) e promover um estilo de vida saudável. Seja amigável e empático. 
         SOBRE EMOJIS: Use emojis COM MODERAÇÃO. Eles são bem-vindos para adicionar um toque amigável e visualmente agradável quando apropriado (por exemplo, 🥗 para alimentação, 🏃‍♀️ para exercícios), mas EVITE O EXCESSO para não poluir a conversa. Um ou dois emojis por mensagem, se relevantes, são suficientes.
@@ -321,30 +337,53 @@
         function speakText(textToSpeak) {
             if ('speechSynthesis' in window) {
                 const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = textToSpeak;
+                tempDiv.innerHTML = textToSpeak; 
                 let cleanText = tempDiv.textContent || tempDiv.innerText || "";
                 
                 cleanText = cleanText.replace(emojiRegex, '').trim();
-                cleanText = cleanText.replace(/\s\s+/g, ' ');
+                cleanText = cleanText.replace(/\s\s+/g, ' '); 
 
-
-                if (speechSynthesis.speaking) speechSynthesis.cancel();
+                if (speechSynthesis.speaking) {
+                    console.log("Canceling previous speech.");
+                    speechSynthesis.cancel(); 
+                }
                 
-                const utterance = new SpeechSynthesisUtterance(cleanText);
+                if (currentSpeechUtterance && (currentSpeechUtterance.ended === false || currentSpeechUtterance.error)) { // More robust check
+                    currentSpeechUtterance = null;
+                }
+
+                currentSpeechUtterance = new SpeechSynthesisUtterance(cleanText);
                 let selectedVoice = voices.find(voice => voice.lang === 'pt-BR' && (voice.name.toLowerCase().includes('neural') || voice.name.toLowerCase().includes('google') || voice.name.toLowerCase().includes('microsoft') || voice.name.toLowerCase().includes('soraia') || voice.name.toLowerCase().includes('camila') || voice.name.toLowerCase().includes('helena') || voice.name.toLowerCase().includes('luciana'))); 
                 if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang === 'pt-BR' && voice.localService === false); 
                 if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang === 'pt-BR'); 
                 if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang.startsWith('pt')); 
                 
                 if (selectedVoice) {
-                    utterance.voice = selectedVoice;
+                    currentSpeechUtterance.voice = selectedVoice;
                 } else if (voices.length > 0 && voices[0].lang.startsWith('pt')) { 
-                    utterance.voice = voices[0];
+                    currentSpeechUtterance.voice = voices[0];
                 }
-                utterance.lang = 'pt-BR'; 
-                utterance.rate = 0.95; 
-                utterance.pitch = 1; 
-                speechSynthesis.speak(utterance);
+                currentSpeechUtterance.lang = 'pt-BR'; 
+                currentSpeechUtterance.rate = 0.95; 
+                currentSpeechUtterance.pitch = 1; 
+
+                currentSpeechUtterance.onstart = function() {
+                    console.log('SpeechSynthesisUtterance.onstart');
+                };
+                currentSpeechUtterance.onend = function() {
+                    console.log('SpeechSynthesisUtterance.onend - utterance finished.');
+                    currentSpeechUtterance = null; 
+                };
+                currentSpeechUtterance.onerror = function(event) {
+                    console.error('SpeechSynthesisUtterance.onerror - Error:', event.error, 'Message:', event.utterance.text.substring(0,50));
+                    addMessage(`Desculpe, houve um erro ao tentar ler o texto em voz alta. (${event.error})`, 'ai');
+                    currentSpeechUtterance = null; 
+                };
+                
+                console.log("Attempting to speak:", cleanText.substring(0, 100) + "...");
+                speechSynthesis.speak(currentSpeechUtterance);
+            } else {
+                 addMessage('Desculpe, seu navegador não suporta a leitura em voz alta.', 'ai');
             }
         }
         
@@ -381,13 +420,13 @@
                 
                 wrapper.appendChild(messageElement);
                 wrapper.appendChild(readButton);
-                chatMessages.appendChild(wrapper);
+                chatMessagesContainer.appendChild(wrapper); // Use renamed variable
 
             } else if (type === 'text') { 
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message', 'user-message');
                 messageElement.textContent = processedContent; 
-                chatMessages.appendChild(messageElement);
+                chatMessagesContainer.appendChild(messageElement); // Use renamed variable
             } else if (type === 'image' && sender === 'user') { 
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message', 'user-message'); 
@@ -400,19 +439,19 @@
                 caption.classList.add('image-caption');
                 caption.textContent = "Sua imagem (clique para ampliar)";
                 messageElement.appendChild(caption);
-                chatMessages.appendChild(messageElement);
+                chatMessagesContainer.appendChild(messageElement); // Use renamed variable
             }
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Use renamed variable
             resetInactivityTimer(); 
         }
 
         function openImageModal(src) {
-            modalImageContent.src = src;
-            imagePreviewModal.style.display = 'flex';
+            modalImageElement.src = src; // Use renamed variable
+            imagePreviewModalDialog.style.display = 'flex'; // Use renamed variable
         }
-        closeModalButton.onclick = () => imagePreviewModal.style.display = 'none';
-        imagePreviewModal.onclick = (event) => {
-            if (event.target === imagePreviewModal) imagePreviewModal.style.display = 'none';
+        closeModalButtonElement.onclick = () => imagePreviewModalDialog.style.display = 'none'; // Use renamed variables
+        imagePreviewModalDialog.onclick = (event) => { // Use renamed variable
+            if (event.target === imagePreviewModalDialog) imagePreviewModalDialog.style.display = 'none'; // Use renamed variable
         };
 
         function addTypingIndicator() {
@@ -425,8 +464,8 @@
             typingIndicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Diabetes Fácil digitando...'; 
             
             wrapper.appendChild(typingIndicator);
-            chatMessages.appendChild(wrapper);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesContainer.appendChild(wrapper); // Use renamed variable
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Use renamed variable
         }
 
         function removeTypingIndicator() {
@@ -436,7 +475,7 @@
 
         async function getAiResponse(userMessageParts) {
             addTypingIndicator();
-            [sendButton, sendAudioButton, sendImageButton, userInput].forEach(el => el.disabled = true);
+            [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = true); // Use renamed variables
             
             chatHistory.push({ role: "user", parts: userMessageParts });
             
@@ -477,15 +516,15 @@
                 console.error('Erro ao enviar mensagem para IA:', error);
                 addMessage(`Erro: ${error.message}. Verifique sua conexão ou tente mais tarde.`, 'ai');
             } finally {
-                [sendButton, sendAudioButton, sendImageButton, userInput].forEach(el => el.disabled = false);
-                userInput.focus();
+                [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = false); // Use renamed variables
+                userInputElement.focus(); // Use renamed variable
                 currentImageToSend = null;
                 resetInactivityTimer();
             }
         }
 
         function handleSendMessage() {
-            const messageText = userInput.value.trim();
+            const messageText = userInputElement.value.trim(); // Use renamed variable
             let userMessageParts = [];
             if (currentImageToSend) {
                 userMessageParts.push({ inlineData: { mimeType: currentImageToSend.mimeType, data: currentImageToSend.data } });
@@ -501,11 +540,11 @@
             }
 
             if (userMessageParts.length > 0) {
-                userInput.value = '';
+                userInputElement.value = ''; // Use renamed variable
                 getAiResponse(userMessageParts);
             }
             currentImageToSend = null;
-            sendImageInput.value = null;
+            sendImageInputElement.value = null; // Use renamed variable
             resetInactivityTimer();
         }
 
@@ -519,75 +558,73 @@
 
             recognition.onstart = () => {
                 isRecording = true;
-                sendAudioButtonIcon.classList.remove('fa-microphone');
-                sendAudioButtonIcon.classList.add('fa-stop-circle');
-                sendAudioButton.classList.add('is-recording');
-                sendAudioButton.title = "Parar Gravação";
-                userInput.placeholder = "Estou ouvindo...";
+                sendAudioButtonIconElement.classList.remove('fa-microphone'); // Use renamed variable
+                sendAudioButtonIconElement.classList.add('fa-stop-circle'); // Use renamed variable
+                sendAudioButtonElement.classList.add('is-recording'); // Use renamed variable
+                sendAudioButtonElement.title = "Parar Gravação"; // Use renamed variable
+                userInputElement.placeholder = "Estou ouvindo..."; // Use renamed variable
             };
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                userInput.value = transcript;
+                userInputElement.value = transcript; // Use renamed variable
             };
 
             recognition.onerror = (event) => {
                 console.error("Erro no reconhecimento de voz:", event.error);
-                userInput.placeholder = "Erro ao ouvir. Tente novamente.";
+                userInputElement.placeholder = "Erro ao ouvir. Tente novamente."; // Use renamed variable
                 if (event.error === 'no-speech') {
-                     userInput.placeholder = "Não detectei fala. Tente novamente.";
+                     userInputElement.placeholder = "Não detectei fala. Tente novamente."; // Use renamed variable
                 } else if (event.error === 'audio-capture') {
-                     userInput.placeholder = "Problema com microfone. Verifique as permissões.";
+                     userInputElement.placeholder = "Problema com microfone. Verifique as permissões."; // Use renamed variable
                 } else if (event.error === 'not-allowed') {
-                     userInput.placeholder = "Permissão para microfone negada.";
+                     userInputElement.placeholder = "Permissão para microfone negada."; // Use renamed variable
                 }
             };
 
             recognition.onend = () => {
                 isRecording = false;
-                sendAudioButtonIcon.classList.remove('fa-stop-circle');
-                sendAudioButtonIcon.classList.add('fa-microphone');
-                sendAudioButton.classList.remove('is-recording');
-                sendAudioButton.title = "Gravar Áudio";
-                if (!userInput.value) { 
-                    userInput.placeholder = "Digite ou clique no microfone para falar...";
+                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
+                sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
+                sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
+                sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
+                if (!userInputElement.value) {  // Use renamed variable
+                    userInputElement.placeholder = "Digite ou clique no microfone para falar..."; // Use renamed variable
                 }
             };
 
-            sendAudioButton.addEventListener('click', () => {
+            sendAudioButtonElement.addEventListener('click', () => { // Use renamed variable
                 if (isRecording) {
                     recognition.stop();
                 } else {
                     try {
-                        // Verificar permissão antes de tentar iniciar
                         navigator.mediaDevices.getUserMedia({ audio: true })
                             .then(stream => {
-                                // Permissão concedida, podemos fechar o stream pois a API de reconhecimento cuida disso.
                                 stream.getTracks().forEach(track => track.stop());
                                 recognition.start();
                             })
                             .catch(err => {
                                 console.error("Erro ao obter permissão do microfone:", err);
-                                userInput.placeholder = "Permissão para microfone necessária.";
+                                userInputElement.placeholder = "Permissão para microfone necessária."; // Use renamed variable
                                 if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-                                     userInput.placeholder = "Permissão para microfone negada.";
+                                     userInputElement.placeholder = "Permissão para microfone negada."; // Use renamed variable
                                 } else {
-                                     userInput.placeholder = "Erro com microfone.";
+                                     userInputElement.placeholder = "Erro com microfone."; // Use renamed variable
                                 }
                                 isRecording = false; 
-                                sendAudioButtonIcon.classList.remove('fa-stop-circle');
-                                sendAudioButtonIcon.classList.add('fa-microphone');
-                                sendAudioButton.classList.remove('is-recording');
-                                sendAudioButton.title = "Gravar Áudio";
+                                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
+                                sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
+                                sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
+                                sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
                             });
                     } catch(e) {
                         console.error("Erro ao iniciar reconhecimento (catch geral):", e);
-                        userInput.placeholder = "Não foi possível iniciar a gravação.";
+                        userInputElement.placeholder = "Não foi possível iniciar a gravação."; // Use renamed variable
                          isRecording = false; 
-                         sendAudioButtonIcon.classList.remove('fa-stop-circle');
-                         sendAudioButtonIcon.classList.add('fa-microphone');
-                         sendAudioButton.classList.remove('is-recording');
-                         sendAudioButton.title = "Gravar Áudio";
+                         sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
+                         sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
+                         sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
+                         sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
                     }
                 }
                 resetInactivityTimer();
@@ -595,29 +632,29 @@
 
         } else {
             console.warn("Reconhecimento de voz não é suportado neste navegador.");
-            sendAudioButton.title = "Reconhecimento de voz não suportado";
-            sendAudioButton.disabled = true; 
-            userInput.placeholder = "Digite sua mensagem...";
+            sendAudioButtonElement.title = "Reconhecimento de voz não suportado"; // Use renamed variable
+            sendAudioButtonElement.disabled = true;  // Use renamed variable
+            userInputElement.placeholder = "Digite sua mensagem..."; // Use renamed variable
         }
         // --- End Web Speech API ---
 
 
-        sendButton.addEventListener('click', handleSendMessage);
-        userInput.addEventListener('keypress', (event) => {
+        sendButtonElement.addEventListener('click', handleSendMessage); // Use renamed variable
+        userInputElement.addEventListener('keypress', (event) => { // Use renamed variable
             if (event.key === 'Enter') {
-                if (userInput.value.trim()) {
+                if (userInputElement.value.trim()) { // Use renamed variable
                     handleSendMessage();
                 }
             }
             resetInactivityTimer(); 
         });
-        userInput.addEventListener('input', resetInactivityTimer); 
+        userInputElement.addEventListener('input', resetInactivityTimer); // Use renamed variable
 
-        sendImageButton.addEventListener('click', () => {
-            sendImageInput.click();
+        sendImageButtonElement.addEventListener('click', () => { // Use renamed variable
+            sendImageInputElement.click(); // Use renamed variable
             resetInactivityTimer();
         });
-        sendImageInput.addEventListener('change', (event) => {
+        sendImageInputElement.addEventListener('change', (event) => { // Use renamed variable
             const file = event.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
@@ -625,20 +662,23 @@
                     currentImageToSend = {
                         mimeType: file.type, data: e.target.result.split(',')[1], previewUrl: e.target.result
                     };
-                    userInput.value = `Pronto para enviar imagem: ${file.name}. Adicione um comentário ou envie.`;
-                    userInput.focus();
+                    userInputElement.value = `Pronto para enviar imagem: ${file.name}. Adicione um comentário ou envie.`; // Use renamed variable
+                    userInputElement.focus(); // Use renamed variable
                 };
                 reader.readAsDataURL(file);
             } else {
-                currentImageToSend = null; sendImageInput.value = null;
+                currentImageToSend = null; sendImageInputElement.value = null; // Use renamed variable
             }
             resetInactivityTimer();
         });
         
         function resetConversation() {
             console.log("Conversa reiniciada devido à inatividade.");
-            chatMessages.innerHTML = ''; 
-            if (speechSynthesis.speaking) speechSynthesis.cancel(); 
+            chatMessagesContainer.innerHTML = ''; // Use renamed variable
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel(); 
+                currentSpeechUtterance = null;
+            }
             if (recognition && isRecording) recognition.abort(); 
             initialChatSetup(); 
             addMessage("Sua conversa foi reiniciada devido a inatividade. 😊", "ai"); 
@@ -654,7 +694,7 @@
                 { role: "user", parts: [{ text: systemPromptText }] } 
             ];
 
-            const firstAiMessage = "Olá! Sou o <strong>Diabetes Fácil</strong> <i class='fas fa-book-medical' style='color:#2563eb;'></i>, seu assistente para saúde e diabetes.<br>Como está sua glicemia hoje? 🤔 Ou me envie uma foto do seu prato! 📸"; 
+            const firstAiMessage = "Olá! Sou o <strong>Diabetes Fácil</strong> <i class='fas fa-book-medical' style='color:#2563eb;'></i>, seu assistente para saúde e diabetes.<br>Como está sua glicemia hoje? 🤔 Ou me envie uma foto do seu prato! �"; 
             addMessage(firstAiMessage, 'ai'); 
             chatHistory.push({ role: "model", parts: [{ text: firstAiMessage }] }); 
             resetInactivityTimer();
@@ -668,3 +708,4 @@
     </script>
 </body>
 </html>
+�
