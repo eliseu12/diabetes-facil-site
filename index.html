@@ -44,14 +44,19 @@
             body { 
                 padding-top: 0;
                 padding-bottom: 0;
-                align-items: flex-start; 
-                justify-content: flex-start;
+                /* Removed align-items and justify-content for body on mobile,
+                   as #chat-container will be fixed and cover the screen. */
             }
             #chat-container {
-                height: 100vh; /* Fallback */
-                height: 100dvh; /* Full dynamic viewport height */
-                max-height: 100dvh;
-                max-width: 100%; 
+                position: fixed; /* Use fixed positioning for mobile to fill viewport */
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 100%; /* Full height of the fixed container (viewport) */
+                width: 100%;  /* Full width of the fixed container (viewport) */
+                max-height: none; /* Override max-height for fixed positioning */
+                max-width: none;  /* Override max-width for fixed positioning */
                 border-radius: 0;
                 box-shadow: none;
                 margin: 0; 
@@ -176,7 +181,7 @@
         #input-area {
             display: flex;
             align-items: center;
-            padding: 0.5rem 0.75rem; /* Adjusted padding for overall area */
+            padding: 0.5rem 0.75rem; 
             border-top: 1px solid #e5e7eb;
             background-color: #ffffff;
             gap: 0.5rem;
@@ -184,11 +189,11 @@
         }
         #user-input {
             flex-grow: 1;
-            padding: 0.8rem 1rem; /* Increased padding for taller input field */
+            padding: 0.8rem 1rem; 
             border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 1rem; /* Slightly larger font size */
-            line-height: 1.4; /* Adjust line height if needed */
+            font-size: 1rem; 
+            line-height: 1.4; 
             transition: border-color 0.2s ease-in-out;
         }
         #user-input:focus {
@@ -203,13 +208,13 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem; /* Slightly larger icon for larger buttons */
+            font-size: 1rem; 
             transition: background-color 0.2s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px; /* Made buttons slightly larger to match taller input */
-            height: 44px; /* Made buttons slightly larger to match taller input */
+            width: 44px; 
+            height: 44px; 
             flex-shrink: 0;
         }
         .icon-button:hover {
@@ -706,4 +711,4 @@
 
     </script>
 </body>
-</html>
+</ht
