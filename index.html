@@ -50,11 +50,11 @@
             gap: 1rem;
             background-color: #f9fafb;
         }
-        .message-wrapper { /* Wrapper for AI message and its read-aloud button */
+        .message-wrapper {
             display: flex;
-            align-items: flex-start; /* Align items to the start of the cross axis */
-            gap: 8px; /* Space between message bubble and button */
-            max-width: 90%; /* Ensure wrapper doesn't overflow too much */
+            align-items: flex-start; 
+            gap: 8px; 
+            max-width: 90%; 
         }
         .message-wrapper.ai-wrapper {
              align-self: flex-start;
@@ -63,7 +63,7 @@
         .message {
             padding: 0.85rem 1.1rem;
             border-radius: 10px;
-            max-width: 100%; /* Message bubble takes full width of its content within wrapper */
+            max-width: 100%; 
             line-height: 1.6;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -71,24 +71,23 @@
         .user-message {
             background-color: #3b82f6;
             color: white;
-            align-self: flex-end; /* User messages still align to the right */
+            align-self: flex-end; 
             border-bottom-right-radius: 0px;
-            max-width: 85%; /* Keep user message max-width */
+            max-width: 85%; 
         }
         .ai-message {
             background-color: #e5e7eb;
             color: #1f2937;
-            /* align-self: flex-start; No longer needed here, handled by wrapper */
             border-bottom-left-radius: 0px;
         }
-        .ai-message strong { /* This CSS rule correctly styles the <strong> tag */
+        .ai-message strong { 
             font-weight: 600;
             color: #111827;
         }
         .ai-message.typing {
             color: #6b7280;
             font-style: italic;
-            width: fit-content; /* So typing indicator doesn't take full width */
+            width: fit-content; 
         }
         .message img {
             max-width: 100%;
@@ -103,26 +102,33 @@
             margin-top: 4px;
         }
         .read-aloud-button-standalone {
-            background-color: #e5e7eb; /* Match AI bubble or be distinct */
+            background-color: #e5e7eb; 
             border: none;
             color: #3b82f6;
             cursor: pointer;
             font-size: 1rem;
-            padding: 8px; /* Make it a bit more clickable */
-            border-radius: 50%; /* Circular button */
+            padding: 8px; 
+            border-radius: 50%; 
             width: 36px;
             height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 5px; /* Align with top of message bubble */
+            margin-top: 5px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex-shrink: 0; /* Prevent button from shrinking */
+            flex-shrink: 0; 
         }
         .read-aloud-button-standalone:hover {
-            background-color: #d1d5db; /* Slightly darker on hover */
+            background-color: #d1d5db; 
             color: #2563eb;
         }
+        #send-audio-button.is-recording {
+            background-color: #ef4444; /* Red when recording */
+        }
+        #send-audio-button.is-recording:hover {
+            background-color: #dc2626; /* Darker red on hover */
+        }
+
 
         #input-area {
             display: flex;
@@ -192,8 +198,8 @@
         <div id="chat-messages">
             </div>
         <div id="input-area">
-            <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off">
-            <button id="send-audio-button" class="icon-button" title="Enviar Áudio (Simulado)">
+            <input type="text" id="user-input" placeholder="Digite ou clique no microfone para falar..." autocomplete="off">
+            <button id="send-audio-button" class="icon-button" title="Gravar Áudio">
                 <i class="fas fa-microphone"></i>
             </button>
             <input type="file" id="send-image-input" accept="image/*" style="display: none;">
@@ -216,17 +222,21 @@
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const sendAudioButton = document.getElementById('send-audio-button');
+        const sendAudioButtonIcon = sendAudioButton.querySelector('i');
         const sendImageButton = document.getElementById('send-image-button');
         const sendImageInput = document.getElementById('send-image-input');
         const imagePreviewModal = document.getElementById('image-preview-modal');
         const modalImageContent = document.getElementById('modal-image-content');
         const closeModalButton = document.querySelector('#image-preview-modal .close-modal');
 
-        let chatHistory = []; // Will be initialized in initialChatSetup
+        let chatHistory = [];
         let currentImageToSend = null;
         let voices = [];
         let inactivityTimer;
-        const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+        const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; 
+
+        let recognition;
+        let isRecording = false;
 
         const systemPromptText = `Você é o "Diabetes Fácil", um assistente virtual especializado em apoiar pacientes com diabetes (tipo 1 e tipo 2) e promover um estilo de vida saudável. Seja amigável e empático. 
         SOBRE EMOJIS: Use emojis COM MODERAÇÃO. Eles são bem-vindos para adicionar um toque amigável e visualmente agradável quando apropriado (por exemplo, 🥗 para alimentação, 🏃‍♀️ para exercícios), mas EVITE O EXCESSO para não poluir a conversa. Um ou dois emojis por mensagem, se relevantes, são suficientes.
@@ -392,15 +402,12 @@
             if (typingIndicatorWrapper) typingIndicatorWrapper.remove();
         }
 
-        // const apiKey = ""; // API Key REMOVED from client-side code
-
         async function getAiResponse(userMessageParts) {
             addTypingIndicator();
             [sendButton, sendAudioButton, sendImageButton, userInput].forEach(el => el.disabled = true);
             
             chatHistory.push({ role: "user", parts: userMessageParts });
             
-            // apiUrl now points to the Netlify Function
             const apiUrl = `/.netlify/functions/gemini-proxy`; 
             
             const payload = { 
@@ -425,7 +432,7 @@
                     const aiResponseText = result.candidates[0].content.parts[0].text;
                     addMessage(aiResponseText, 'ai'); 
                     chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] }); 
-                } else if (result.error) { // Handle errors returned structured by our Netlify function
+                } else if (result.error) { 
                     addMessage(`Erro do assistente: ${result.error}`, 'ai');
                     console.error('Structured error from Netlify function:', result.error);
                 }
@@ -470,25 +477,95 @@
             resetInactivityTimer();
         }
 
+        // --- Web Speech API for Audio Input ---
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.continuous = false; // Processa uma frase por vez
+            recognition.interimResults = false; // Apenas resultados finais
+
+            recognition.onstart = () => {
+                isRecording = true;
+                sendAudioButtonIcon.classList.remove('fa-microphone');
+                sendAudioButtonIcon.classList.add('fa-stop-circle');
+                sendAudioButton.classList.add('is-recording');
+                sendAudioButton.title = "Parar Gravação";
+                userInput.placeholder = "Estou ouvindo...";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                // Opcional: enviar automaticamente após transcrição
+                // if (transcript.trim()) {
+                // handleSendMessage();
+                // }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Erro no reconhecimento de voz:", event.error);
+                userInput.placeholder = "Erro ao ouvir. Tente novamente.";
+                if (event.error === 'no-speech') {
+                     userInput.placeholder = "Não detectei fala. Tente novamente.";
+                } else if (event.error === 'audio-capture') {
+                     userInput.placeholder = "Problema com microfone. Verifique as permissões.";
+                } else if (event.error === 'not-allowed') {
+                     userInput.placeholder = "Permissão para microfone negada.";
+                }
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                sendAudioButtonIcon.classList.remove('fa-stop-circle');
+                sendAudioButtonIcon.classList.add('fa-microphone');
+                sendAudioButton.classList.remove('is-recording');
+                sendAudioButton.title = "Gravar Áudio";
+                if (!userInput.value) { // Se não houve transcrição bem sucedida
+                    userInput.placeholder = "Digite ou clique no microfone para falar...";
+                }
+            };
+
+            sendAudioButton.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    try {
+                        recognition.start();
+                    } catch(e) {
+                        console.error("Erro ao iniciar reconhecimento:", e);
+                        userInput.placeholder = "Não foi possível iniciar a gravação.";
+                         isRecording = false; // Ensure state is correct
+                         sendAudioButtonIcon.classList.remove('fa-stop-circle');
+                         sendAudioButtonIcon.classList.add('fa-microphone');
+                         sendAudioButton.classList.remove('is-recording');
+                         sendAudioButton.title = "Gravar Áudio";
+                    }
+                }
+                resetInactivityTimer();
+            });
+
+        } else {
+            console.warn("Reconhecimento de voz não é suportado neste navegador.");
+            sendAudioButton.title = "Reconhecimento de voz não suportado";
+            sendAudioButton.disabled = true; // Desabilita o botão se não houver suporte
+            userInput.placeholder = "Digite sua mensagem...";
+        }
+        // --- End Web Speech API ---
+
+
         sendButton.addEventListener('click', handleSendMessage);
         userInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') handleSendMessage();
+            if (event.key === 'Enter') {
+                // Se o usuário pressionar Enter e houver texto, envia.
+                // Se estiver gravando e pressionar Enter, pode ser confuso, então prioriza o texto.
+                if (userInput.value.trim()) {
+                    handleSendMessage();
+                }
+            }
             resetInactivityTimer(); 
         });
         userInput.addEventListener('input', resetInactivityTimer); 
-
-        sendAudioButton.addEventListener('click', () => {
-            const audioUserMsg = "Você: [Áudio Enviado - Simulado]";
-            const audioAiResponse = "🎤 Áudio recebido (simulado). No momento, processo melhor mensagens de texto e imagens. Por favor, digite sua dúvida ou envie uma foto do seu prato!"; 
-            addMessage(audioUserMsg, 'user');
-            chatHistory.push({ role: "user", parts: [{ text: "[Simulação de envio de áudio pelo usuário]" }] });
-            setTimeout(() => {
-                 addMessage(audioAiResponse, 'ai');
-                 chatHistory.push({ role: "model", parts: [{ text: audioAiResponse }] });
-            }, 500);
-            userInput.placeholder = "Digite sua mensagem ou envie uma foto...";
-            resetInactivityTimer();
-        });
 
         sendImageButton.addEventListener('click', () => {
             sendImageInput.click();
@@ -516,6 +593,7 @@
             console.log("Conversa reiniciada devido à inatividade.");
             chatMessages.innerHTML = ''; 
             if (speechSynthesis.speaking) speechSynthesis.cancel(); 
+            if (recognition && isRecording) recognition.abort(); // Para gravação se estiver ativa
             initialChatSetup(); 
             addMessage("Sua conversa foi reiniciada devido a inatividade. 😊", "ai"); 
         }
