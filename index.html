@@ -12,59 +12,59 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* Prevent horizontal scroll on the page body */
+            overflow-x: hidden; 
             -webkit-tap-highlight-color: transparent; 
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; 
-            display: flex; /* Added to help center chat-container on larger screens */
-            align-items: center; /* Added to help center chat-container on larger screens */
-            justify-content: center; /* Added to help center chat-container on larger screens */
-            min-height: 100vh; /* Ensure body takes full height for centering */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
         }
         #chat-container {
             display: flex;
             flex-direction: column;
             width: 100%; 
-            max-width: 450px; /* Default max-width, good for embedding or smaller views */
-            height: 85vh;    /* Default height, good portion of screen */
-            max-height: 700px; /* Absolute max height */
-            margin: auto;      /* Center it by default */
+            max-width: 450px; 
+            height: 85vh;    
+            max-height: 700px; 
+            margin: auto;      
             background-color: #ffffff;
             border-radius: 12px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
             overflow: hidden; 
         }
 
-        /* Adjustments for very small screens (like typical mobile portrait) */
         @media (max-width: 599px) {
-            body { /* Remove body padding for full screen on mobile */
+            html, body {
+                overflow: hidden; /* Prevent body scrolling on mobile */
+            }
+            body { 
                 padding-top: 0;
                 padding-bottom: 0;
-                align-items: flex-start; /* Align chat to top on mobile */
+                align-items: flex-start; 
                 justify-content: flex-start;
             }
             #chat-container {
                 height: 100vh; /* Fallback */
                 height: 100dvh; /* Full dynamic viewport height */
                 max-height: 100dvh;
-                max-width: 100%; /* Full width on mobile */
+                max-width: 100%; 
                 border-radius: 0;
                 box-shadow: none;
-                margin: 0; /* No margin on mobile */
+                margin: 0; 
             }
         }
         
-        /* Adjustments for larger screens (tablets/desktops) */
-        @media (min-width: 768px) { /* Tablet and up */
+        @media (min-width: 768px) { 
             #chat-container {
                 max-width: 700px; 
                 height: 80vh; 
                 max-height: 750px;
             }
         }
-
 
         #chat-header {
             background-color: #2563eb;
@@ -173,11 +173,10 @@
             background-color: #dc2626; 
         }
 
-
         #input-area {
             display: flex;
             align-items: center;
-            padding: 0.75rem; 
+            padding: 0.5rem 0.75rem; /* Adjusted padding for overall area */
             border-top: 1px solid #e5e7eb;
             background-color: #ffffff;
             gap: 0.5rem;
@@ -185,10 +184,11 @@
         }
         #user-input {
             flex-grow: 1;
-            padding: 0.65rem 0.9rem; 
+            padding: 0.8rem 1rem; /* Increased padding for taller input field */
             border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 0.95rem; 
+            font-size: 1rem; /* Slightly larger font size */
+            line-height: 1.4; /* Adjust line height if needed */
             transition: border-color 0.2s ease-in-out;
         }
         #user-input:focus {
@@ -203,13 +203,13 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem; 
+            font-size: 1rem; /* Slightly larger icon for larger buttons */
             transition: background-color 0.2s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px; 
-            height: 40px; 
+            width: 44px; /* Made buttons slightly larger to match taller input */
+            height: 44px; /* Made buttons slightly larger to match taller input */
             flex-shrink: 0;
         }
         .icon-button:hover {
@@ -264,7 +264,6 @@
     </div>
 
     <script>
-        // Renamed DOM element variables to avoid potential global scope clashes with IDs
         const chatMessagesContainer = document.getElementById('chat-messages');
         const userInputElement = document.getElementById('user-input');
         const sendButtonElement = document.getElementById('send-button');
@@ -348,7 +347,7 @@
                     speechSynthesis.cancel(); 
                 }
                 
-                if (currentSpeechUtterance && (currentSpeechUtterance.ended === false || currentSpeechUtterance.error)) { // More robust check
+                if (currentSpeechUtterance && (currentSpeechUtterance.ended === false || currentSpeechUtterance.error)) { 
                     currentSpeechUtterance = null;
                 }
 
@@ -420,13 +419,13 @@
                 
                 wrapper.appendChild(messageElement);
                 wrapper.appendChild(readButton);
-                chatMessagesContainer.appendChild(wrapper); // Use renamed variable
+                chatMessagesContainer.appendChild(wrapper); 
 
             } else if (type === 'text') { 
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message', 'user-message');
                 messageElement.textContent = processedContent; 
-                chatMessagesContainer.appendChild(messageElement); // Use renamed variable
+                chatMessagesContainer.appendChild(messageElement); 
             } else if (type === 'image' && sender === 'user') { 
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message', 'user-message'); 
@@ -439,19 +438,19 @@
                 caption.classList.add('image-caption');
                 caption.textContent = "Sua imagem (clique para ampliar)";
                 messageElement.appendChild(caption);
-                chatMessagesContainer.appendChild(messageElement); // Use renamed variable
+                chatMessagesContainer.appendChild(messageElement); 
             }
-            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Use renamed variable
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; 
             resetInactivityTimer(); 
         }
 
         function openImageModal(src) {
-            modalImageElement.src = src; // Use renamed variable
-            imagePreviewModalDialog.style.display = 'flex'; // Use renamed variable
+            modalImageElement.src = src; 
+            imagePreviewModalDialog.style.display = 'flex'; 
         }
-        closeModalButtonElement.onclick = () => imagePreviewModalDialog.style.display = 'none'; // Use renamed variables
-        imagePreviewModalDialog.onclick = (event) => { // Use renamed variable
-            if (event.target === imagePreviewModalDialog) imagePreviewModalDialog.style.display = 'none'; // Use renamed variable
+        closeModalButtonElement.onclick = () => imagePreviewModalDialog.style.display = 'none'; 
+        imagePreviewModalDialog.onclick = (event) => { 
+            if (event.target === imagePreviewModalDialog) imagePreviewModalDialog.style.display = 'none'; 
         };
 
         function addTypingIndicator() {
@@ -464,8 +463,8 @@
             typingIndicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Diabetes Fácil digitando...'; 
             
             wrapper.appendChild(typingIndicator);
-            chatMessagesContainer.appendChild(wrapper); // Use renamed variable
-            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Use renamed variable
+            chatMessagesContainer.appendChild(wrapper); 
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; 
         }
 
         function removeTypingIndicator() {
@@ -475,7 +474,7 @@
 
         async function getAiResponse(userMessageParts) {
             addTypingIndicator();
-            [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = true); // Use renamed variables
+            [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = true); 
             
             chatHistory.push({ role: "user", parts: userMessageParts });
             
@@ -516,15 +515,15 @@
                 console.error('Erro ao enviar mensagem para IA:', error);
                 addMessage(`Erro: ${error.message}. Verifique sua conexão ou tente mais tarde.`, 'ai');
             } finally {
-                [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = false); // Use renamed variables
-                userInputElement.focus(); // Use renamed variable
+                [sendButtonElement, sendAudioButtonElement, sendImageButtonElement, userInputElement].forEach(el => el.disabled = false); 
+                userInputElement.focus(); 
                 currentImageToSend = null;
                 resetInactivityTimer();
             }
         }
 
         function handleSendMessage() {
-            const messageText = userInputElement.value.trim(); // Use renamed variable
+            const messageText = userInputElement.value.trim(); 
             let userMessageParts = [];
             if (currentImageToSend) {
                 userMessageParts.push({ inlineData: { mimeType: currentImageToSend.mimeType, data: currentImageToSend.data } });
@@ -540,11 +539,11 @@
             }
 
             if (userMessageParts.length > 0) {
-                userInputElement.value = ''; // Use renamed variable
+                userInputElement.value = ''; 
                 getAiResponse(userMessageParts);
             }
             currentImageToSend = null;
-            sendImageInputElement.value = null; // Use renamed variable
+            sendImageInputElement.value = null; 
             resetInactivityTimer();
         }
 
@@ -558,42 +557,42 @@
 
             recognition.onstart = () => {
                 isRecording = true;
-                sendAudioButtonIconElement.classList.remove('fa-microphone'); // Use renamed variable
-                sendAudioButtonIconElement.classList.add('fa-stop-circle'); // Use renamed variable
-                sendAudioButtonElement.classList.add('is-recording'); // Use renamed variable
-                sendAudioButtonElement.title = "Parar Gravação"; // Use renamed variable
-                userInputElement.placeholder = "Estou ouvindo..."; // Use renamed variable
+                sendAudioButtonIconElement.classList.remove('fa-microphone'); 
+                sendAudioButtonIconElement.classList.add('fa-stop-circle'); 
+                sendAudioButtonElement.classList.add('is-recording'); 
+                sendAudioButtonElement.title = "Parar Gravação"; 
+                userInputElement.placeholder = "Estou ouvindo..."; 
             };
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                userInputElement.value = transcript; // Use renamed variable
+                userInputElement.value = transcript; 
             };
 
             recognition.onerror = (event) => {
                 console.error("Erro no reconhecimento de voz:", event.error);
-                userInputElement.placeholder = "Erro ao ouvir. Tente novamente."; // Use renamed variable
+                userInputElement.placeholder = "Erro ao ouvir. Tente novamente."; 
                 if (event.error === 'no-speech') {
-                     userInputElement.placeholder = "Não detectei fala. Tente novamente."; // Use renamed variable
+                     userInputElement.placeholder = "Não detectei fala. Tente novamente."; 
                 } else if (event.error === 'audio-capture') {
-                     userInputElement.placeholder = "Problema com microfone. Verifique as permissões."; // Use renamed variable
+                     userInputElement.placeholder = "Problema com microfone. Verifique as permissões."; 
                 } else if (event.error === 'not-allowed') {
-                     userInputElement.placeholder = "Permissão para microfone negada."; // Use renamed variable
+                     userInputElement.placeholder = "Permissão para microfone negada."; 
                 }
             };
 
             recognition.onend = () => {
                 isRecording = false;
-                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
-                sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
-                sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
-                sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
-                if (!userInputElement.value) {  // Use renamed variable
-                    userInputElement.placeholder = "Digite ou clique no microfone para falar..."; // Use renamed variable
+                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); 
+                sendAudioButtonIconElement.classList.add('fa-microphone'); 
+                sendAudioButtonElement.classList.remove('is-recording'); 
+                sendAudioButtonElement.title = "Gravar Áudio"; 
+                if (!userInputElement.value) {  
+                    userInputElement.placeholder = "Digite ou clique no microfone para falar..."; 
                 }
             };
 
-            sendAudioButtonElement.addEventListener('click', () => { // Use renamed variable
+            sendAudioButtonElement.addEventListener('click', () => { 
                 if (isRecording) {
                     recognition.stop();
                 } else {
@@ -605,26 +604,26 @@
                             })
                             .catch(err => {
                                 console.error("Erro ao obter permissão do microfone:", err);
-                                userInputElement.placeholder = "Permissão para microfone necessária."; // Use renamed variable
+                                userInputElement.placeholder = "Permissão para microfone necessária."; 
                                 if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-                                     userInputElement.placeholder = "Permissão para microfone negada."; // Use renamed variable
+                                     userInputElement.placeholder = "Permissão para microfone negada."; 
                                 } else {
-                                     userInputElement.placeholder = "Erro com microfone."; // Use renamed variable
+                                     userInputElement.placeholder = "Erro com microfone."; 
                                 }
                                 isRecording = false; 
-                                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
-                                sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
-                                sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
-                                sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
+                                sendAudioButtonIconElement.classList.remove('fa-stop-circle'); 
+                                sendAudioButtonIconElement.classList.add('fa-microphone'); 
+                                sendAudioButtonElement.classList.remove('is-recording'); 
+                                sendAudioButtonElement.title = "Gravar Áudio"; 
                             });
                     } catch(e) {
                         console.error("Erro ao iniciar reconhecimento (catch geral):", e);
-                        userInputElement.placeholder = "Não foi possível iniciar a gravação."; // Use renamed variable
+                        userInputElement.placeholder = "Não foi possível iniciar a gravação."; 
                          isRecording = false; 
-                         sendAudioButtonIconElement.classList.remove('fa-stop-circle'); // Use renamed variable
-                         sendAudioButtonIconElement.classList.add('fa-microphone'); // Use renamed variable
-                         sendAudioButtonElement.classList.remove('is-recording'); // Use renamed variable
-                         sendAudioButtonElement.title = "Gravar Áudio"; // Use renamed variable
+                         sendAudioButtonIconElement.classList.remove('fa-stop-circle'); 
+                         sendAudioButtonIconElement.classList.add('fa-microphone'); 
+                         sendAudioButtonElement.classList.remove('is-recording'); 
+                         sendAudioButtonElement.title = "Gravar Áudio"; 
                     }
                 }
                 resetInactivityTimer();
@@ -632,29 +631,29 @@
 
         } else {
             console.warn("Reconhecimento de voz não é suportado neste navegador.");
-            sendAudioButtonElement.title = "Reconhecimento de voz não suportado"; // Use renamed variable
-            sendAudioButtonElement.disabled = true;  // Use renamed variable
-            userInputElement.placeholder = "Digite sua mensagem..."; // Use renamed variable
+            sendAudioButtonElement.title = "Reconhecimento de voz não suportado"; 
+            sendAudioButtonElement.disabled = true;  
+            userInputElement.placeholder = "Digite sua mensagem..."; 
         }
         // --- End Web Speech API ---
 
 
-        sendButtonElement.addEventListener('click', handleSendMessage); // Use renamed variable
-        userInputElement.addEventListener('keypress', (event) => { // Use renamed variable
+        sendButtonElement.addEventListener('click', handleSendMessage); 
+        userInputElement.addEventListener('keypress', (event) => { 
             if (event.key === 'Enter') {
-                if (userInputElement.value.trim()) { // Use renamed variable
+                if (userInputElement.value.trim()) { 
                     handleSendMessage();
                 }
             }
             resetInactivityTimer(); 
         });
-        userInputElement.addEventListener('input', resetInactivityTimer); // Use renamed variable
+        userInputElement.addEventListener('input', resetInactivityTimer); 
 
-        sendImageButtonElement.addEventListener('click', () => { // Use renamed variable
-            sendImageInputElement.click(); // Use renamed variable
+        sendImageButtonElement.addEventListener('click', () => { 
+            sendImageInputElement.click(); 
             resetInactivityTimer();
         });
-        sendImageInputElement.addEventListener('change', (event) => { // Use renamed variable
+        sendImageInputElement.addEventListener('change', (event) => { 
             const file = event.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
@@ -662,19 +661,19 @@
                     currentImageToSend = {
                         mimeType: file.type, data: e.target.result.split(',')[1], previewUrl: e.target.result
                     };
-                    userInputElement.value = `Pronto para enviar imagem: ${file.name}. Adicione um comentário ou envie.`; // Use renamed variable
-                    userInputElement.focus(); // Use renamed variable
+                    userInputElement.value = `Pronto para enviar imagem: ${file.name}. Adicione um comentário ou envie.`; 
+                    userInputElement.focus(); 
                 };
                 reader.readAsDataURL(file);
             } else {
-                currentImageToSend = null; sendImageInputElement.value = null; // Use renamed variable
+                currentImageToSend = null; sendImageInputElement.value = null; 
             }
             resetInactivityTimer();
         });
         
         function resetConversation() {
             console.log("Conversa reiniciada devido à inatividade.");
-            chatMessagesContainer.innerHTML = ''; // Use renamed variable
+            chatMessagesContainer.innerHTML = ''; 
             if (speechSynthesis.speaking) {
                 speechSynthesis.cancel(); 
                 currentSpeechUtterance = null;
@@ -694,7 +693,7 @@
                 { role: "user", parts: [{ text: systemPromptText }] } 
             ];
 
-            const firstAiMessage = "Olá! Sou o <strong>Diabetes Fácil</strong> <i class='fas fa-book-medical' style='color:#2563eb;'></i>, seu assistente para saúde e diabetes.<br>Como está sua glicemia hoje? 🤔 Ou me envie uma foto do seu prato! �"; 
+            const firstAiMessage = "Olá! Sou o <strong>Diabetes Fácil</strong> <i class='fas fa-book-medical' style='color:#2563eb;'></i>, seu assistente para saúde e diabetes.<br>Como está sua glicemia hoje? 🤔 Ou me envie uma foto do seu prato! 📸"; 
             addMessage(firstAiMessage, 'ai'); 
             chatHistory.push({ role: "model", parts: [{ text: firstAiMessage }] }); 
             resetInactivityTimer();
@@ -708,4 +707,3 @@
     </script>
 </body>
 </html>
-
