@@ -8,65 +8,95 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll on the page */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f0f4f8; /* Visible on larger screens */
         }
         #chat-container {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 40px);
-            max-width: 700px;
-            margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            height: 100vh; /* Fallback for older browsers */
+            height: 100dvh; /* Dynamic viewport height for better mobile fit */
+            width: 100%;   /* Full width */
+            max-width: 700px; /* Max width on larger screens */
+            margin: 0 auto;   /* Center on larger screens */
             background-color: #ffffff;
+            box-shadow: none; /* No shadow on mobile by default */
+            border-radius: 0; /* No radius on mobile by default */
+            overflow: hidden; /* Crucial: children will scroll, not the container */
         }
+
+        /* Card-like appearance for screens wider than a typical mobile width */
+        @media (min-width: 600px) { /* Example breakpoint, adjust as needed */
+            html, body {
+                 /* Allow body scroll on desktop if chat card is very tall or for general page content */
+                overflow: auto;
+            }
+            body {
+                 padding-top: 20px; /* Add some spacing around the card */
+                 padding-bottom: 20px;
+            }
+            #chat-container {
+                height: calc(100vh - 40px); /* Or a more constrained height like 90vh */
+                max-height: 90vh; /* Example: Limit height to 90% of viewport height */
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            }
+        }
+
         #chat-header {
             background-color: #2563eb;
             color: white;
             padding: 1rem 1.5rem;
             text-align: center;
-            font-size: 1.35rem;
+            font-size: 1.2rem; /* Slightly smaller font for header on mobile */
             font-weight: 600;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            /* border-top-left-radius & border-top-right-radius handled by #chat-container on desktop */
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
         }
         #chat-header i {
             margin-right: 10px;
-            font-size: 1.6rem;
+            font-size: 1.5rem; /* Adjust icon size */
             color: #ffffff;
         }
         #chat-messages {
             flex-grow: 1;
-            padding: 1.5rem;
+            padding: 1rem; /* Slightly reduced padding for mobile */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.75rem; /* Slightly reduced gap */
             background-color: #f9fafb;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
         .message-wrapper {
             display: flex;
             align-items: flex-start; 
             gap: 8px; 
-            max-width: 90%; 
+            max-width: 95%; /* Allow a bit more width for messages on mobile */
         }
         .message-wrapper.ai-wrapper {
              align-self: flex-start;
         }
 
         .message {
-            padding: 0.85rem 1.1rem;
+            padding: 0.75rem 1rem; /* Adjust padding */
             border-radius: 10px;
             max-width: 100%; 
-            line-height: 1.6;
+            line-height: 1.5; /* Adjust line height */
             white-space: pre-wrap;
-            word-wrap: break-word;
+            word-wrap: break-word; /* Ensure long words break */
+            overflow-wrap: break-word; /* More robust word breaking */
         }
         .user-message {
             background-color: #3b82f6;
@@ -97,7 +127,7 @@
             cursor: pointer;
         }
         .message .image-caption {
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Smaller caption */
             color: #6b7280;
             margin-top: 4px;
         }
@@ -106,16 +136,16 @@
             border: none;
             color: #3b82f6;
             cursor: pointer;
-            font-size: 1rem;
-            padding: 8px; 
+            font-size: 0.9rem; /* Adjust icon size */
+            padding: 7px; 
             border-radius: 50%; 
-            width: 36px;
-            height: 36px;
+            width: 32px; /* Smaller button */
+            height: 32px; /* Smaller button */
             display: flex;
             align-items: center;
             justify-content: center;
             margin-top: 5px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             flex-shrink: 0; 
         }
         .read-aloud-button-standalone:hover {
@@ -123,27 +153,28 @@
             color: #2563eb;
         }
         #send-audio-button.is-recording {
-            background-color: #ef4444; /* Red when recording */
+            background-color: #ef4444; 
         }
         #send-audio-button.is-recording:hover {
-            background-color: #dc2626; /* Darker red on hover */
+            background-color: #dc2626; 
         }
 
 
         #input-area {
             display: flex;
             align-items: center;
-            padding: 1rem;
+            padding: 0.75rem; /* Adjust padding */
             border-top: 1px solid #e5e7eb;
             background-color: #ffffff;
             gap: 0.5rem;
+            flex-shrink: 0; /* Prevent input area from shrinking */
         }
         #user-input {
             flex-grow: 1;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.9rem; /* Adjust padding */
             border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem; /* Adjust font size */
             transition: border-color 0.2s ease-in-out;
         }
         #user-input:focus {
@@ -154,17 +185,18 @@
         .icon-button {
             background-color: #3b82f6;
             color: white;
-            padding: 0.75rem;
+            padding: 0.65rem; /* Adjust padding */
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem; /* Adjust icon size */
             transition: background-color 0.2s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
+            width: 40px; /* Adjust button size */
+            height: 40px; /* Adjust button size */
+            flex-shrink: 0;
         }
         .icon-button:hover {
             background-color: #2563eb;
@@ -482,8 +514,8 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
-            recognition.continuous = false; // Processa uma frase por vez
-            recognition.interimResults = false; // Apenas resultados finais
+            recognition.continuous = false; 
+            recognition.interimResults = false; 
 
             recognition.onstart = () => {
                 isRecording = true;
@@ -497,10 +529,6 @@
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 userInput.value = transcript;
-                // Opcional: enviar automaticamente após transcrição
-                // if (transcript.trim()) {
-                // handleSendMessage();
-                // }
             };
 
             recognition.onerror = (event) => {
@@ -521,7 +549,7 @@
                 sendAudioButtonIcon.classList.add('fa-microphone');
                 sendAudioButton.classList.remove('is-recording');
                 sendAudioButton.title = "Gravar Áudio";
-                if (!userInput.value) { // Se não houve transcrição bem sucedida
+                if (!userInput.value) { 
                     userInput.placeholder = "Digite ou clique no microfone para falar...";
                 }
             };
@@ -531,11 +559,31 @@
                     recognition.stop();
                 } else {
                     try {
-                        recognition.start();
+                        // Verificar permissão antes de tentar iniciar
+                        navigator.mediaDevices.getUserMedia({ audio: true })
+                            .then(stream => {
+                                // Permissão concedida, podemos fechar o stream pois a API de reconhecimento cuida disso.
+                                stream.getTracks().forEach(track => track.stop());
+                                recognition.start();
+                            })
+                            .catch(err => {
+                                console.error("Erro ao obter permissão do microfone:", err);
+                                userInput.placeholder = "Permissão para microfone necessária.";
+                                if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+                                     userInput.placeholder = "Permissão para microfone negada.";
+                                } else {
+                                     userInput.placeholder = "Erro com microfone.";
+                                }
+                                isRecording = false; 
+                                sendAudioButtonIcon.classList.remove('fa-stop-circle');
+                                sendAudioButtonIcon.classList.add('fa-microphone');
+                                sendAudioButton.classList.remove('is-recording');
+                                sendAudioButton.title = "Gravar Áudio";
+                            });
                     } catch(e) {
-                        console.error("Erro ao iniciar reconhecimento:", e);
+                        console.error("Erro ao iniciar reconhecimento (catch geral):", e);
                         userInput.placeholder = "Não foi possível iniciar a gravação.";
-                         isRecording = false; // Ensure state is correct
+                         isRecording = false; 
                          sendAudioButtonIcon.classList.remove('fa-stop-circle');
                          sendAudioButtonIcon.classList.add('fa-microphone');
                          sendAudioButton.classList.remove('is-recording');
@@ -548,7 +596,7 @@
         } else {
             console.warn("Reconhecimento de voz não é suportado neste navegador.");
             sendAudioButton.title = "Reconhecimento de voz não suportado";
-            sendAudioButton.disabled = true; // Desabilita o botão se não houver suporte
+            sendAudioButton.disabled = true; 
             userInput.placeholder = "Digite sua mensagem...";
         }
         // --- End Web Speech API ---
@@ -557,8 +605,6 @@
         sendButton.addEventListener('click', handleSendMessage);
         userInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                // Se o usuário pressionar Enter e houver texto, envia.
-                // Se estiver gravando e pressionar Enter, pode ser confuso, então prioriza o texto.
                 if (userInput.value.trim()) {
                     handleSendMessage();
                 }
@@ -593,7 +639,7 @@
             console.log("Conversa reiniciada devido à inatividade.");
             chatMessages.innerHTML = ''; 
             if (speechSynthesis.speaking) speechSynthesis.cancel(); 
-            if (recognition && isRecording) recognition.abort(); // Para gravação se estiver ativa
+            if (recognition && isRecording) recognition.abort(); 
             initialChatSetup(); 
             addMessage("Sua conversa foi reiniciada devido a inatividade. 😊", "ai"); 
         }
